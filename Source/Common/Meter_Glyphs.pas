@@ -11,6 +11,7 @@ uses Meter_Canvas;
 type
   TMeterDisplay = (mdVector, mdSegment);
 
+// 字形の左上とサイズをピクセルで受け取り、対象キャンバスへ描く。
 procedure Glyph(Canvas: TMeterCanvas; Ch: Char; X, Y, W, H: Single;
   Color: Cardinal; Display: TMeterDisplay; Unlit: Boolean = False);
 // 内蔵字形を指定幅に収める。座標はテキストの中心。
@@ -225,6 +226,7 @@ var
   Total, ShapeWidth, Advance, X: Single;
 begin
   if Text = '' then Exit;
+  // 合字を度記号と英字に分け、単位も数字と同じ内蔵字形で描く。
   Expanded := StringReplace(Text, '℃', '°C', [rfReplaceAll]);
   Expanded := StringReplace(Expanded, '℉', '°F', [rfReplaceAll]);
   Total := 0;

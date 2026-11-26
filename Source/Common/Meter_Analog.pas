@@ -8,7 +8,9 @@ interface
 
 uses Meter_Canvas, Meter_Settings;
 
+// 外装と共通目盛りを描く。設定が同じ間はこのレイヤーを再利用できる。
 procedure DrawAnalogBase(C: TMeterCanvas; const S: TMeterSettings);
+// 既存の文字盤に針と警告表示を合成する。角度は計測範囲内の比率をもとに求める。
 procedure DrawAnalogReading(C: TMeterCanvas; const S: TMeterSettings;
   const Reading: TMeterReading);
 

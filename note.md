@@ -52,7 +52,7 @@ cmd /c 'call "C:\Program Files (x86)\Embarcadero\Studio\37.0\bin\rsvars.bat" && 
 
 ## Setup の扱い
 
-- ユーザー指定により WeatherFX の `setup` をそのままコピーした。カタログ、ZIP、スクリプトの対象はコピー元と同じ WeatherFX。
+- 初回実装では WeatherFX の setup をコピーした。v1.0.0 の配布準備で、SYNC_Sanpai の手順をひな形にして SYNC_Meter 用に変更した。ZIP は Release AUF2、README、ライセンスを専用フォルダーにまとめる。
 
 ## AviUtl2 カタログ登録時の共通ルール
 
@@ -66,3 +66,9 @@ cmd /c 'call "C:\Program Files (x86)\Embarcadero\Studio\37.0\bin\rsvars.bat" && 
 - 両構成の AUF2 を直接ロードし、登録名、20プリセットの反映、透過 RGBA、範囲外表示、シーク時の再現性、0秒の切り替え、同値・逆順の範囲、効果音を確認した。全計器の出力見本は `Win64/Verification/all-meters.png`、破損と警告表示は `Win64/Verification/overflow.png`。
 - AviUtl2 の画面上での追加メニュー、合成表示、カメラ操作は未確認。
 - `setup` の5ファイルについて、コピー元とファイル名および SHA-256 が一致することを確認した。
+
+## v1.0.0 の配布準備（2026-11-26）
+
+- 設定・描画・音声それぞれの公開処理と、キャッシュおよびホストのデータの寿命に関するコメントを補足した。最長の本番ユニットは 347 行。
+- README をインストールと利用方法に整理し、20種類の描画見本を Sample/meters.png に置いた。同梱READMEとカタログは公開タグの画像を参照する。
+- ZIP 内の AUF2 の XXH3-128 は cc5376970c1b3db38cf4cef40ab5be05。カタログには同じ値を記録した。

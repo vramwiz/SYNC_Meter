@@ -8,7 +8,9 @@ interface
 
 uses Meter_Canvas, Meter_Settings;
 
+// 外装と目盛りを描く。計測値や破損の進行に依存しない静的レイヤー。
 procedure DrawLevelBase(C: TMeterCanvas; const S: TMeterSettings);
+// 液面・残量と警告を既存の外装に合成する。破損の進行は発生からの経過秒で指定する。
 procedure DrawLevelReading(C: TMeterCanvas; const S: TMeterSettings;
   const Reading: TMeterReading);
 
@@ -106,6 +108,7 @@ begin
     Pt(TUBE_X + 14, BREAK_Y - 29 * Spread)], 1.25, Ink);
 end;
 
+// 粒子番号と成分番号ごとに固定の値を得る。発生順や前フレームに依存しない。
 function ParticleFactor(Index, Salt: Integer): Single;
 begin
   Result := ((Index * 167 + Salt * 389 + Index * Index * (Salt + 5) * 37) mod 1013) / 1013;
@@ -265,6 +268,7 @@ begin
   Y := LevelY(Reading.Fraction, TANK_TOP, TANK_BOTTOM);
   if Reading.Fraction <> 0 then
   begin
+    // 上限を超えるモードでも、液面と反射をタンク内に収める。
     C.PushClip(69, 81, 129, 336);
     try
       if Reading.Fraction > 0 then

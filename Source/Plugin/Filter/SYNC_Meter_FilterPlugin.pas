@@ -20,6 +20,7 @@ uses System.SysUtils, System.SyncObjs, Winapi.Windows, PluginFilterTable,
   Meter_Settings, Meter_Renderer, Meter_Parameters, Meter_Audio;
 
 type
+  // ホストの create/destroy 間で有効。音声処理はこの描画状態に依存しない。
   TMeterSession = class
     Renderer: TMeterRenderer;
     Lock: TCriticalSection;
@@ -76,6 +77,7 @@ begin
     S := ReadMeterSettings;
     Reading := EvaluateMeter(S, Video^.Object_^.Time);
     Session := TMeterSession(Video^.UserData);
+    // 同じインスタンスのサーフェスと転送バッファを使う区間を直列化する。
     Session.Lock.Acquire;
     try
       Session.Renderer.Render(S, Reading, Video^.SetImageData);

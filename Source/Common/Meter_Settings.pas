@@ -133,16 +133,24 @@ const
      Minimum:0; Maximum:120; Initial:12; Target:98; Decimals:0; LowAction:oorClamp; HighAction:oorClamp;
      Beeps:[]; Colors:($476678,$1A303E,$42C7E7,$DBF0FA,$FF9356)));
 
+// 計測器の既定値を返す。単位文字列と配色は呼び出し元で個別に変更できる。
 function PresetSettings(Kind: TMeterKind): TMeterSettings;
+// 設定項目から来る NaN と無限大を既定値に戻してから、各項目の範囲に収める。
 function FiniteValue(Value, Fallback: Double): Double;
+// 指定された端点を昇順にし、同値の場合も正の表示幅を返す。元の設定は書き換えない。
 function MeterRange(const S: TMeterSettings): TMeterRange;
+// 生の計測値を表示範囲と比較する。範囲の端点は通常表示に含む。
 function ReadingStatus(Value: Double; const Bounds: TMeterRange): TReadingStatus;
+// オブジェクト先頭からの再生秒を、計測値・表示用の値・破損状態に変換する。
 function EvaluateMeter(const S: TMeterSettings; Seconds: Double): TMeterReading;
 // 開始時点で範囲外なら 0 秒。演出中に境界を越えなければ -1 秒。
 function RangeEntryTime(const S: TMeterSettings; const Bounds: TMeterRange;
   Side: TReadingStatus): Double;
+// 描画位置は範囲内の比率で返す。補助目盛りでは LabelText が空になる。
 function MeterTicks(const Bounds: TMeterRange; MaxIntervals: Integer): TArray<TMeterTick>;
+// 地域設定によらない小数点表記で、内蔵字形用のラベルを整形する。
 function FixedNumber(Value: Double; Decimals: Integer): string;
+// 表示桁数のトラック値を描画用の整数にする。
 function DisplayDecimals(const S: TMeterSettings): Integer;
 
 implementation
@@ -204,6 +212,7 @@ var
 begin
   Start := S.Values[mtInitial];
   Target := S.Values[mtTarget];
+  // 待ち時間がなく即座に切り替わる場合、途中で表示されない初期値は警告に含めない。
   if ReadingStatus(Start, Bounds) = Side then
   begin
     if (S.Values[mtDelay] > 0) or (S.Values[mtDuration] > 0) or
@@ -243,6 +252,7 @@ begin
   if (S.Kind = mkColumn) and ((S.Overflow = omBreak) or
     ((S.Overflow = omPreset) and (P.HighAction = oorBreak))) then
   begin
+    // 毎フレーム同じ境界到達時刻を求め、シークしても破損状態を再現する。
     Entry := RangeEntryTime(S, Bounds, rsHigh);
     if (Entry >= 0) and (Seconds >= Entry) and
       ((Seconds > Entry) or (Result.Status = rsHigh)) then
@@ -314,6 +324,7 @@ begin
     if (Abs(Bounds.Lower - RoundTo(Bounds.Lower, -Index)) > 0.0000001) or
       (Abs(Bounds.Upper - RoundTo(Bounds.Upper, -Index)) > 0.0000001) then
       Decimals := Index + 1 else Break;
+  // 端点近くはラベルを省き、補助目盛りは端数のある端点からも等間隔の格子を使う。
   MinorStep := Step / SUBDIVISIONS;
   EndMargin := Min(Span * 0.02, MinorStep * 0.49);
   SetLength(Result, MaxIntervals * SUBDIVISIONS + 3);

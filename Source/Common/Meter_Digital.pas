@@ -8,7 +8,9 @@ interface
 
 uses Meter_Canvas, Meter_Settings;
 
+// 計器の外装、操作部、液晶の背景を描く。表示値は別の描画処理で重ねる。
 procedure DrawDigitalBase(C: TMeterCanvas; const S: TMeterSettings);
+// LCD に現在値または異常表示を描き、対応する計器では補助バーも更新する。
 procedure DrawDigitalReading(C: TMeterCanvas; const S: TMeterSettings;
   const Reading: TMeterReading);
 
@@ -22,6 +24,7 @@ type
   end;
 
 const
+  // 外装と表示の両方から参照する LCD のピクセル座標。アナログ計器には使わない。
   DISPLAYS: array[mkDigitalTemperature..mkLight] of TDisplay = (
     (X:79; Y:91; W:260; H:97),  // 温度
     (X:230; Y:66; W:183; H:77), // 体温

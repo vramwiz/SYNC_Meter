@@ -39,6 +39,7 @@ const
     (Minimum:0; Maximum:100; Step:0.01));
 
 var
+  // 項目の構造体は DLL が保持し、値や文字列の現在値はホストがコールバック前に設定する。
   PresetItem, KindItem, OverflowItem: TFILTER_ITEM_SELECT;
   PresetButton: TFILTER_ITEM_BUTTON;
   KindOptions: array[0..Ord(High(TMeterKind)) + 1] of TFILTER_ITEM_SELECT_ITEM;
@@ -49,6 +50,7 @@ var
   UnitItem: TFILTER_ITEM_STRING;
   SoundItem: TFILTER_ITEM_CHECK;
 
+// 対象エフェクトの保存値を編集 API で更新する。時間設定はそのまま使う。
 procedure ApplyPreset(Edit: PEDIT_SECTION; Obj: OBJECT_HANDLE; Effect, Item: PWideChar); cdecl;
 var
   Kind: TMeterKind;
@@ -76,6 +78,7 @@ begin
   if (Edit = nil) or (Obj = nil) or (Effect = nil) or
     not Assigned(Edit^.GetObjectItemValue) or not Assigned(Edit^.SetObjectItemValue) then Exit;
   try
+    // 編集 API を続けて呼ぶ間も対象名を使えるよう、文字列をコピーしておく。
     Target := Effect;
     Saved := Edit^.GetObjectItemValue(Obj, PWideChar(Target), PresetItem.Name);
     if Saved = nil then Exit;
@@ -187,6 +190,7 @@ begin
   Result.Overflow := TOverflowMode(EnsureRange(OverflowItem.Value, 0, Ord(High(TOverflowMode))));
   Result.Sound := SoundItem.Value <> 0;
   Result.UnitText := '';
+  // ホストが保持する単位文字列はコールバック内でコピーする。
   if UnitItem.Value <> nil then
     SetString(Result.UnitText, UnitItem.Value, Min(64, StrLen(UnitItem.Value)));
   for Color := Low(TMeterColor) to High(TMeterColor) do

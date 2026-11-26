@@ -9,6 +9,7 @@ interface
 uses Winapi.D2D1, Winapi.Wincodec, AviUtl2FilterTypes, Meter_Canvas, Meter_Settings;
 
 type
+  // エフェクトごとにサーフェス・ブラシ・RGBAバッファを所有する。
   TMeterRenderer = class
   private
     FFactory: ID2D1Factory;
@@ -19,6 +20,7 @@ type
     FCanvas: TMeterCanvas;
     FComCookie: Pointer;
     FWidth, FHeight: Integer;
+    // ケース、目盛り、単位、配色に関わる設定を比較して背景の更新を判断する。
     FBaseSettings: TMeterSettings;
     FReading: TMeterReading;
     FDecimals: Integer;
@@ -125,6 +127,7 @@ begin
   end;
 end;
 
+// Direct2D の乗算済み BGRA を、ホストへ渡すストレートアルファの RGBA に戻す。
 procedure TMeterRenderer.CopyRGBA;
 var
   I, Alpha: Integer;
@@ -191,6 +194,7 @@ begin
     FDecimals := DisplayDecimals(S);
     FFrameReady := True;
   end;
+  // ポインターの借用は SetImage 呼び出し中だけ。バッファは次の描画で再利用する。
   SetImage(@FPixels[0], FWidth, FHeight);
 end;
 

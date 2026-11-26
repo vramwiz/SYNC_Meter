@@ -9,6 +9,7 @@ interface
 uses Winapi.D2D1;
 
 type
+  // 描画ターゲットとブラシの参照を保持する。呼び出し側が描画区間と並行アクセスを管理する。
   TMeterCanvas = class
   private
     FFactory: ID2D1Factory;
@@ -21,9 +22,12 @@ type
     function Outline(const Points: array of TD2D1Point2F; Filled, Closed: Boolean): ID2D1PathGeometry;
   public
     constructor Create(const Factory: ID2D1Factory; const Target: ID2D1RenderTarget);
+    // 角度はラジアンで、上向きが 0、時計回りが正。座標と太さはピクセル。
     procedure Arc(X, Y, Radius, Start, Stop, Width: Single; Color: Cardinal);
+    // クリップは対応する PopClip が呼ばれるまで、同じターゲットの描画に有効。
     procedure PushClip(X, Y, W, H: Single);
     procedure PopClip;
+    // 図形の色は $RRGGBB、不透明度は 0～1。図形は現在のターゲットに合成する。
     procedure Line(X1, Y1, X2, Y2, Stroke: Single; Color: Cardinal; Alpha: Single = 1);
     procedure Oval(X, Y, RX, RY: Single; Color: Cardinal; Alpha: Single = 1);
     procedure Ring(X, Y, RX, RY, Stroke: Single; Color: Cardinal; Alpha: Single = 1);
@@ -39,6 +43,7 @@ type
 function Shade(Color: Cardinal; Factor: Single): Cardinal;
 function Mix(First, Second: Cardinal; Weight: Single): Cardinal;
 function Pt(X, Y: Single): TD2D1Point2F; inline;
+// 上向きから時計回りの角度と半径を、描画面の座標に変換する。
 function Polar(X, Y, Radius, Angle: Single): TD2D1Point2F;
 
 implementation

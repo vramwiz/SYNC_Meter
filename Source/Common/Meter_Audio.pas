@@ -8,6 +8,7 @@ interface
 
 uses AviUtl2FilterTypes, Meter_Settings;
 
+// Scene のサンプルレートとオブジェクト先頭からのサンプル位置を使う。
 // ホストが要求した区間を、電子音または無音の32-bit PCMで埋める。
 function RenderMeterAudio(Audio: PFILTER_PROC_AUDIO; const S: TMeterSettings): Byte;
 
@@ -66,6 +67,7 @@ begin
             Schedule(EventStart, 520, 0.26, 0.48);
         end;
       end;
+      // ブロックと重なる音だけを生成し、分割位置にかかわらず同じ位相にする。
       Origin := Obj^.SampleIndex;
       Gain := S.Values[mtVolume] * 0.006;
       for J := 0 to Count - 1 do
@@ -85,6 +87,7 @@ begin
       end;
     end;
   end;
+  // サンプルバッファはこのコールバックが所有し、ホストへチャンネルごとに渡す。
   for Channel := 0 to Obj^.ChannelNum - 1 do
     Audio^.SetSampleData(@Samples[0], Channel);
   Result := 1;
